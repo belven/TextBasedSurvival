@@ -16,9 +16,11 @@ public class Choice {
 	}
 
 	public void AddChoice(Choice c) {
-		if (!choices.contains(c)) {
+		if (!choices.contains(c) && c != null) {
 			choices.add(c);
 		}
+
+		choices.trimToSize();
 	}
 
 	public String ToString(int position, boolean show_id, boolean show_alias) {

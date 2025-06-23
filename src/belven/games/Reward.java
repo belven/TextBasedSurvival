@@ -1,23 +1,9 @@
 package belven.games;
 
-public class Reward {
-	private String name = "";
-	private int amount = 1;
+public class Reward extends InventoryItem {
 
-	public Reward(String name, int amount) {
-		this(name);
-		this.amount = amount;
+	public Reward(int amount, Item item) {
+		super(amount, item);
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public int getAmount() {
-		return amount;
-	}
-
-	public Reward(String name) {
-		this.name = name;
-	}
 }

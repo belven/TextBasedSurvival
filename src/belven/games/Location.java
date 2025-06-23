@@ -7,10 +7,12 @@ public class Location {
 	private String name;
 
 	private ArrayList<Building> buildings = new ArrayList<>();
+	private ItemType[] loot_types = new ItemType[5];
 
-	public Location(String name, ArrayList<Building> buildings) {
+	public Location(String name, ArrayList<Building> buildings, ItemType... loot_types) {
 		this.name = name;
 		this.buildings = buildings;
+		this.loot_types = loot_types;
 	}
 
 	public Location() {
@@ -22,6 +24,10 @@ public class Location {
 
 	public String getName() {
 		return name;
+	}
+
+	public ItemType[] getItemTypes() {
+		return loot_types;
 	}
 
 }

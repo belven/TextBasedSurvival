@@ -56,27 +56,22 @@ public class SurvivalGame {
 		roomH.AddRoom(roomG);
 
 		Building main_building = new Building("Main Building");
-//		main_building.getRooms().add(roomA);
-//		main_building.getRooms().add(roomB);
-//		main_building.getRooms().add(roomC);
-//		main_building.getRooms().add(roomD);
-//		main_building.getRooms().add(roomE);
-//		main_building.getRooms().add(roomF);
-//		main_building.getRooms().add(roomG);
-//		main_building.getRooms().add(roomH);
+		main_building.getRooms().add(roomA);
+		main_building.getRooms().add(roomA);
+		main_building.getRooms().add(roomB);
+		main_building.getRooms().add(roomC);
+		main_building.getRooms().add(roomD);
+		main_building.getRooms().add(roomE);
+		main_building.getRooms().add(roomF);
+		main_building.getRooms().add(roomG);
+		main_building.getRooms().add(roomH);
 
 		main_building.getEntranceRooms().add(roomA);
 		main_building.getEntranceRooms().add(roomH);
 
-		locations.add(new Location("Main Location", new ArrayList<>(Arrays.asList(main_building))));
+		locations.add(new Location("Main Location", new ArrayList<>(Arrays.asList(main_building)), ItemType.Stone, ItemType.Wood, ItemType.Medical));
 
-		ArrayList<Choice> location_choices = new ArrayList<>();
-
-		for (Location l : locations) {
-			location_choices.add(new LocationChoice(l, new Reward("Test 1")));
-		}
-
-		main_menu.getChoices().add(new Choice("Explore", "exp", "Pick a location", location_choices));
+		main_menu.getChoices().add(new ExploreChoice("Explore", "exp", "Pick a location", locations));
 	}
 
 	public static Choice getMainMenuChoice() {
@@ -97,9 +92,11 @@ public class SurvivalGame {
 		try {
 			int selection = Integer.parseInt(input);
 
-			if (selection <= current_choice.getChoices().size() && selection > 0) {
+			int choices_amount = current_choice.getChoices().size();
+
+			if (selection <= choices_amount && selection > 0) {
 				PerformChoice(current_choice.getChoices().get(selection - 1));
-			} else if (current_choice != null && selection == current_choice.getChoices().size() + 1) {
+			} else if (current_choice != null && selection == choices_amount + 1) {
 				PerformChoice(current_choice.getPreviousChoice());
 				choice_selected = true;
 			}
@@ -136,7 +133,8 @@ public class SurvivalGame {
 		int i = 1;
 
 		for (Choice a : choices) {
-			System.out.println(a.ToString(i++, show_id, show_alias));
+			if (a != null)
+				System.out.println(a.ToString(i++, show_id, show_alias));
 		}
 
 		if (current_choice != main_menu) {

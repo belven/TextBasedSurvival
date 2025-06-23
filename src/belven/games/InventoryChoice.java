@@ -11,8 +11,8 @@ public class InventoryChoice extends Choice {
 		super.performChoice(previous_choice);
 
 		Player p = SurvivalGame.GetPlayer();
-		for (Reward r : p.getRewards()) {
-			System.out.println(String.valueOf(r.getAmount()) + " x " + r.getName());
+		for (InventoryItem ii : p.getInventory().getItems()) {
+			System.out.println(String.valueOf(ii.getAmount()) + " x " + ii.getItem().getName());
 		}
 	}
 
