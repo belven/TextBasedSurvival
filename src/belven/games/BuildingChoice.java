@@ -13,7 +13,6 @@ public class BuildingChoice extends Choice {
 	private ArrayList<ItemType> loot_types = new ArrayList<>();
 	private HashMap<Room, ArrayList<Reward>> room_rewards = new HashMap<>();
 
-	private ArrayList<Item> all_items = new ArrayList<>();
 	private ArrayList<Item> filtered_items = new ArrayList<>();
 
 	public BuildingChoice(Building b, ItemType[] lootTypes) {
@@ -27,16 +26,14 @@ public class BuildingChoice extends Choice {
 
 	private void SetupEntrances() {
 		for (Room r : building.getEntranceRooms()) {
-			AddChoice(new RoomChoice(r, this));
+			RoomChoice room_choice = new RoomChoice(r, this);
+			room_choice.previous_choice = this;
+			AddChoice(room_choice);
 		}
 	}
 
 	private void SetupLoot() {
-		all_items.add(new Item("Medical Item", 1, 1, ItemType.Medical));
-		all_items.add(new Item("Stone Item", 1, 1, ItemType.Stone));
-		all_items.add(new Item("Wood Item", 1, 1, ItemType.Wood));
-
-		for (Item i : all_items) {
+		for (Item i : SurvivalGame.getAllItems()) {
 			if (loot_types.contains(i.getType())) {
 				filtered_items.add(i);
 			}
@@ -45,7 +42,7 @@ public class BuildingChoice extends Choice {
 		ArrayList<Reward> rewards = new ArrayList<>();
 
 		for (Item i : filtered_items) {
-			rewards.add(new Reward(randomBetween(1, 10), i));
+			rewards.add(new Reward(randomBetween(10, 30), i));
 		}
 
 		ArrayList<Room> shuffled_rooms = building.getRooms();
@@ -56,18 +53,18 @@ public class BuildingChoice extends Choice {
 
 		while (!rewards.isEmpty()) {
 
-			System.out.println("Adding Rewards to Rooms, Rewards left = " + String.valueOf(rewards.size()));
+			SurvivalGame.PrintLn("Adding Rewards to Rooms, Rewards left = " + String.valueOf(rewards.size()), LogCategory.Info);
 			// Loop through all rooms
 			for (Room r : shuffled_rooms) {
 
-				System.out.println("Attepmting to add rewards to room " + r.getName());
+				SurvivalGame.PrintLn("Attepmting to add rewards to room " + r.getName(), LogCategory.Info);
 
 				boolean one_reward_left = rewards.size() == 1;
 
 				// Get a random amount of rewards
 				int i = !one_reward_left ? randomBetween(1, rewards.size()) : 1;
 
-				System.out.println("Attepmting to add " + String.valueOf(i) + " rewards to room " + r.getName());
+				SurvivalGame.PrintLn("Attepmting to add " + String.valueOf(i) + " rewards to room " + r.getName(), LogCategory.Info);
 
 				// Loop through the amount of possible rewards for the room, until we reach 0
 				for (; i > 0 && !rewards.isEmpty(); i--) {
@@ -77,7 +74,7 @@ public class BuildingChoice extends Choice {
 
 					// Get the reward
 					Reward reward = rewards.get(reward_index);
-					System.out.println("Adding " + reward.getItem().getName() + " to room " + r.getName());
+					SurvivalGame.PrintLn("Adding " + reward.getItem().getName() + " to room " + r.getName(), LogCategory.Info);
 
 					// Add the reward to the list for that room
 					if (room_rewards.containsKey(r)) {
@@ -91,7 +88,7 @@ public class BuildingChoice extends Choice {
 
 					// Remove the reward from the list of available rewards
 					rewards.remove(reward_index);
-					System.out.println("Rewards left = " + String.valueOf(rewards.size()));
+					SurvivalGame.PrintLn("Rewards left = " + String.valueOf(rewards.size()), LogCategory.Info);
 
 					if (rewards.isEmpty()) {
 						break;

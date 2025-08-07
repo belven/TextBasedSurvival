@@ -11,8 +11,14 @@ public class InventoryChoice extends Choice {
 		super.performChoice(previous_choice);
 
 		Player p = SurvivalGame.GetPlayer();
+
+		SurvivalGame.PrintLn("Current Weight: " + String.valueOf(p.getInventory().GetWeight()), LogCategory.Output);
+		SurvivalGame.PrintLn("Max Weight: " + String.valueOf(p.getInventory().getWeightLimit()), LogCategory.Output);
+
 		for (InventoryItem ii : p.getInventory().getItems()) {
-			System.out.println(String.valueOf(ii.getAmount()) + " x " + ii.getItem().getName());
+			String item_text = String.valueOf(ii.getAmount()) + " x " + ii.getItem().getName();
+			item_text += " Weight: " + ii.GetWeight();
+			SurvivalGame.PrintLn(item_text, LogCategory.Output);
 		}
 	}
 

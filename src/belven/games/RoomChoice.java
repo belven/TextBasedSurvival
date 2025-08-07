@@ -10,11 +10,10 @@ public class RoomChoice extends Choice {
 	private BuildingChoice building;
 
 	public RoomChoice(Room in_room, BuildingChoice building) {
-		super(in_room.getName(), "", "You went to room " + in_room.getName());
+		super("Room " + in_room.getName(), "", "You went to room " + in_room.getName());
 		this.room = in_room;
 		this.building = building;
 		SetupRoomChoices();
-
 	}
 
 	@Override
@@ -22,9 +21,13 @@ public class RoomChoice extends Choice {
 		super.performChoice(previous_choice);
 
 		if (building.getRoomRewards().containsKey(getRoom())) {
+
+			SurvivalGame.PrintLn("You found the following Items:", LogCategory.Output);
+
 			for (Reward r : building.getRoomRewards().get(getRoom())) {
-				System.out.println(String.valueOf(r.getAmount()) + " x " + r.getItem().getName());
-				SurvivalGame.GetPlayer().getRewards().add(r);
+				String output = "- " + String.valueOf(r.getAmount()) + " x " + r.getItem().getName();
+				SurvivalGame.PrintLn(output, LogCategory.Output);
+				SurvivalGame.GetPlayer().getInventory().AddItem(r);
 			}
 		}
 	}
@@ -34,8 +37,6 @@ public class RoomChoice extends Choice {
 			room_choices.put(getRoom(), this);
 		}
 
-		AddChoice(previous_choice);
-
 		for (Room r : getRoom().rooms) {
 			if (r != getRoom()) {
 				if (!room_choices.containsKey(r)) {
@@ -44,7 +45,7 @@ public class RoomChoice extends Choice {
 					AddChoice(room_choices.get(r));
 				}
 			} else {
-				System.out.println("Room added self");
+				SurvivalGame.PrintLn("Room " + this.getText() + " added self", LogCategory.Error);
 			}
 		}
 	}

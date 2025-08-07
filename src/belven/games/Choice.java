@@ -1,6 +1,7 @@
 package belven.games;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Choice {
 	private String text = "";
@@ -18,14 +19,34 @@ public class Choice {
 	public void AddChoice(Choice c) {
 		if (!choices.contains(c) && c != null) {
 			choices.add(c);
+		} else {
+			String choice_text = c != null ? c.text : "Null";
+			SurvivalGame.PrintLn("Choice (" + choice_text + ") with same text or null attempted to be added to " + text, LogCategory.Error);
 		}
 
 		choices.trimToSize();
 	}
 
+	@Override
+	public int hashCode() {
+		return Objects.hash(text);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Choice other = (Choice) obj;
+		return text.equals(other.text);
+	}
+
 	public String ToString(int position, boolean show_id, boolean show_alias) {
 		String output = show_id ? String.valueOf(position) + ": " + getText() : getText();
-		output = show_alias ? output + " (" + getAlias() + ")" : output;
+		output = show_alias && !getAlias().isEmpty() ? output + " (" + getAlias() + ")" : output;
 		return output;
 	}
 
@@ -44,6 +65,10 @@ public class Choice {
 	}
 
 	public ArrayList<Choice> getChoices() {
+		if (this != SurvivalGame.getMainMenuChoice() && !choices.contains(SurvivalGame.getMainMenuChoice())) {
+			choices.add(SurvivalGame.getMainMenuChoice());
+		}
+
 		return choices;
 	}
 

@@ -2,6 +2,8 @@ package belven.games;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Scanner;
 
 public class SurvivalGame {
@@ -16,11 +18,20 @@ public class SurvivalGame {
 
 	private static String go_back = "Go Back to ";
 
+	private static boolean show_info = true;
+
 	private static Scanner input = new Scanner(System.in);
+	private static HashMap<String, Item> item_data = new HashMap<>();
 
 	static {
-
 		main_menu.getChoices().add(new InventoryChoice("Check Inventory", "inv", "Current Inventory"));
+		AddItem(new Item("Medkit", 1, 3, ItemType.Medical));
+		AddItem(new Item("Stone", 3, 5, ItemType.Stone));
+		AddItem(new Item("Wood", 10, 3, ItemType.Wood));
+	}
+
+	public static void AddItem(Item i) {
+		item_data.put(i.getName(), i);
 	}
 
 	static {
@@ -69,9 +80,18 @@ public class SurvivalGame {
 		main_building.getEntranceRooms().add(roomA);
 		main_building.getEntranceRooms().add(roomH);
 
-		locations.add(new Location("Main Location", new ArrayList<>(Arrays.asList(main_building)), ItemType.Stone, ItemType.Wood, ItemType.Medical));
+		locations.add(new Location("Main Location", new ArrayList<>(Arrays.asList(main_building)), ItemType.Wood, ItemType.Medical));
 
+		locations.trimToSize();
 		main_menu.getChoices().add(new ExploreChoice("Explore", "exp", "Pick a location", locations));
+	}
+
+	public static Collection<Item> getAllItems() {
+		return item_data.values();
+	}
+
+	public static Item GetItem(String name) {
+		return item_data.get(name);
 	}
 
 	public static Choice getMainMenuChoice() {
@@ -84,6 +104,16 @@ public class SurvivalGame {
 
 	public static void main(String[] args) {
 		PerformChoice(main_menu);
+	}
+
+	public static void PrintLn(String text, LogCategory cat) {
+		if (cat == LogCategory.Info && !show_info) {
+			return;
+		} else {
+			String category_text = cat != LogCategory.Output ? cat.toString() + ": " : "";
+			System.out.println(category_text + text);
+		}
+
 	}
 
 	public static void CheckInput(String input, Choice current_choice) {
@@ -120,10 +150,10 @@ public class SurvivalGame {
 		Choice previous_choice = current_choice;
 		current_choice = a;
 
-		a.performChoice(previous_choice);
+		PrintLn("Player selected " + a.getText(), LogCategory.Info);
+		PrintLn(current_choice.getResponse(), LogCategory.Output);
 
-		System.out.println("Player selected " + a.getText());
-		System.out.println(current_choice.getResponse());
+		a.performChoice(previous_choice);
 
 		PrintChoices(current_choice.getChoices());
 		CheckInput(ReadPlayerInput(), current_choice);
@@ -134,13 +164,17 @@ public class SurvivalGame {
 
 		for (Choice a : choices) {
 			if (a != null)
-				System.out.println(a.ToString(i++, show_id, show_alias));
+				PrintLn(a.ToString(i++, show_id, show_alias), LogCategory.Output);
 		}
 
 		if (current_choice != main_menu) {
-			String text = go_back + current_choice.getPreviousChoice().getText();
-			String output = show_id ? String.valueOf(i) + ": " + text : text;
-			System.out.println(output);
+			// This is used to prevent Room Choices having both, Room A and Go Back to Room
+			// A as choices
+			if (!choices.contains(current_choice.getPreviousChoice())) {
+				String text = go_back + current_choice.getPreviousChoice().getText();
+				String output = show_id ? String.valueOf(i) + ": " + text : text;
+				PrintLn(output, LogCategory.Output);
+			}
 		}
 	}
 
